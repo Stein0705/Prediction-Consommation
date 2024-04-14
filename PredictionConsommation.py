@@ -12,15 +12,17 @@ def Predict(genome, entres):
         #print(f"consommation : {consommation}")
         return consommation
 
-def Modify(genome, change):
+def Modify(genome, change, jump):
         genome = list(genome)
-        i = random.randint(0,9)
         
-        if i > 5:
-                genome[i] += 1
-        else:
-                genome[i] -= 1
-        return genome
+        for x in range(jump):
+                i = random.randint(0,9)
+                
+                if bool(random.getrandbits(1)):
+                        genome[i] += change
+                else:
+                        genome[i] -= change
+                return genome
 
 def Read_Data():
     with open("data.csv", newline='') as file:
@@ -68,16 +70,29 @@ print(data)
 model = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 time_since_evolution = 0
 change = 1
+jump = 1
 
 
 
-for i in range (10000):
-        if time_since_evolution > 100 and score_model > 5000:
-                change += 1
-                time_since_evolution = 0
-                
+for i in range (1000):
+
+        if time_since_evolution > 50:
+               time_since_evolution = 0
+               change +=1
         
-        new_model = Modify(model, change)
+        if change > 1 and score_model > 5000:
+                
+                for x in range(10):
+                       for y in range(10):
+                              for z in range(10):
+                                     for k in range(10):
+                                        new_model[x] += change
+                                        new_model[y] += change
+                                        new_model[z] -= change
+                                        new_model[k] -= change
+        else:
+               
+                new_model = Modify(model, change, jump)
         #print(new_model)
         score_model = Test(model, data)
         score_new_model = Test(new_model, data)
@@ -86,11 +101,12 @@ for i in range (10000):
         if score_model > score_new_model:
                 model = new_model
                 average_deviation_generations.append(score_new_model / 2982)
-                print(f'Generation {i} / Average Deviation: {Test(model, data)/2982} / Model {model} / Change {change}')
+                print(f'Generation {i} / Average Deviation: {Test(model, data)/2982} / Model {model} / Change {change} / Jump {jump}')
                 time_since_evolution = 0
                 change = 1
+                jump = 1
         else:
-               print(f"Generation {i}, pas d'amélioration, {score_model/2982}, Time since evolution: {time_since_evolution} / change {change}")
+               print(f"Generation {i}, pas d'amélioration, {score_model/2982}, Time since evolution: {time_since_evolution} / change {change} / jump {jump}")
                time_since_evolution += 1
                
 
@@ -119,17 +135,6 @@ for i in range(len(data)):
         ys2.append(float(data[i][10]))
 
 
-
-ys3 = []
-
-for i in range(len(data)):
-        ys3.append(Predict(model, data[i]) - float(data[i][10]))
-
-
-plt.plot(ys2, 'r', ys, 'g', ys3, 'y')
-plt.show()
-plt.close()
-
-plt.plot(ys3, 'y')
+plt.plot(ys2, 'r', ys, 'g')
 plt.show()
 plt.close()
