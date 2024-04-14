@@ -12,7 +12,7 @@ def Predict(genome, entres):
         #print(f"consommation : {consommation}")
         return consommation
 
-def Modify(genome, time_since_evolution):
+def Modify(genome, change):
         genome = list(genome)
         i = random.randint(0,9)
         
@@ -67,23 +67,17 @@ data = Read_Data()
 print(data)
 model = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 time_since_evolution = 0
-
+change = 1
 
 
 
 for i in range (10000):
         if time_since_evolution > 100 and score_model > 5000:
-                for i in range(6):
-                        print("RANDOM CHANGE OCCURED")
-                        n = random.randint(0,9)
-                        if n > 5:
-                                model[n] = model[n] * 1.1
-                        else:
-                               model[n] = model[n] * 0.9
+                change += 1
                 time_since_evolution = 0
                 
         
-        new_model = Modify(model, time_since_evolution)
+        new_model = Modify(model, change)
         #print(new_model)
         score_model = Test(model, data)
         score_new_model = Test(new_model, data)
@@ -92,10 +86,11 @@ for i in range (10000):
         if score_model > score_new_model:
                 model = new_model
                 average_deviation_generations.append(score_new_model / 2982)
-                print(f'Generation {i} / Average Deviation: {Test(model, data)/2982} / Model {model}')
+                print(f'Generation {i} / Average Deviation: {Test(model, data)/2982} / Model {model} / Change {change}')
                 time_since_evolution = 0
+                change = 1
         else:
-               print(f"Generation {i}, pas d'amélioration, {score_model/2982}, Time since evolution: {time_since_evolution}")
+               print(f"Generation {i}, pas d'amélioration, {score_model/2982}, Time since evolution: {time_since_evolution} / change {change}")
                time_since_evolution += 1
                
 
