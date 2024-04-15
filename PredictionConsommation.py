@@ -54,39 +54,46 @@ def Test(genome, data):
 
 
 def Select_Best(option1, option2):
+        global generation
         score_model = Test(option1, data)
         score_new_model = Test(option2, data)
         
         if score_model > score_new_model:
                 print(score_model / 2982 , score_new_model/ 2982, option2)
                 average_deviation_generations.append(score_new_model / 2982)
-                print(f'Generation  / Average Deviation: {Test(model, data)/2982} / Model {model}')
+                print(f'Generation {generation} / Average Deviation: {Test(model, data)/2982} / Model {model}')
                 return True
         else:
-                print(f"Generation {score_model/2982}, model {option1}")
+                print(f"Generation {generation}; Average Deviation {score_model/2982}, model {option1}, no evolution")
                 return False
 
 model = numpy.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
-def Scan(change, model, generation):
+generation = 1
+change = 1
+def Scan():
+        global model
+        global generation
+        global change
         generation += 1
-        print("generation: ", generation)
+        
         for i in range(10):
                 new_model = model.copy()
                 new_model[i] += change
                 if Select_Best(model, new_model) == True:
-                        print("+", new_model)
+                        
                         model = new_model.copy()
-                        print("+", model)
+                        
                         if generation < 1000:
-                                Scan(change, model, generation)
+                                        
+                                        Scan()
                 new_model = model.copy()
                 new_model[i] -= change
                 if Select_Best(model, new_model) == True:
-                        print("-", new_model)
+                        
                         model = new_model.copy()
-                        print("-", model)
+                        
                         if generation < 1000:
-                                Scan(change, model, generation)
+                                Scan()
         
                         
 average_deviation_generations = []
@@ -95,14 +102,7 @@ model = numpy.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
 change = 1
 generation = 0
 
-Scan(change, model, generation)
-for i in range (1000):
-        pass
-        
-        
-
-        
-        
+Scan()
 
 
 print(model)
