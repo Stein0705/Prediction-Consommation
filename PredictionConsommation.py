@@ -57,7 +57,7 @@ def Select_Best(option1, option2):
         global generation
         score_model = Test(option1, data)
         score_new_model = Test(option2, data)
-        print("b")
+        
         if score_model > score_new_model:
                 print(score_model / 2982 , score_new_model/ 2982, option2)
                 average_deviation_generations.append(score_new_model / 2982)
@@ -75,7 +75,7 @@ def Scan():
         global generation
         global change
         generation += 1
-        print("a")
+        
         for i in range(10):
                 new_model = model.copy()
                 new_model[i] += change
@@ -90,13 +90,15 @@ def Scan():
                                         return
                 new_model = model.copy()
                 new_model[i] -= change
+                
                 if Select_Best(model, new_model) == True:
                         
                         model = new_model.copy()
-                        print("c")
+                        
                         if generation < 1000:
                                 Scan()
                                 return
+
         
                         
 average_deviation_generations = []
