@@ -99,16 +99,53 @@ def Scan():
                                 Scan()
                                 return
 
-        
+def Scan2D():
+        global model
+        global generation
+        global change
+        generation += 1
+        for x in range(10):
+                for y in range(10):
+                        new_model = model.copy()
+                        new_model[x] += change
+                        new_model[y] += change
+                        if Select_Best(model, new_model) == True:
+                        
+                                model = new_model.copy()
+                        
+                                if generation < 1000:
+                                        Scan2D()
+                                        return
+                        new_model = model.copy()
+                        new_model[x] += change
+                        new_model[y] -= change
+                        if Select_Best(model, new_model) == True:
+                        
+                                model = new_model.copy()
+                        
+                                if generation < 1000:
+                                        Scan2D()
+                                        return
+                        new_model = model.copy()
+                        new_model[x] -= change
+                        new_model[y] -= change
+                        if Select_Best(model, new_model) == True:
+                        
+                                model = new_model.copy()
+                        
+                                if generation < 1000:
+                                        Scan2D()
+                                        return
+
                         
 average_deviation_generations = []
 data = Read_Data()
-model = numpy.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
+model = numpy.array([-24.0, 54.0, 64.0, 67.0, 63.0, 58.0, -6.0, -86.0, -35.0, -11.0])
 change = 1
 generation = 0
 
 Scan()
-
+Scan2D()
 
 print(model)
 
