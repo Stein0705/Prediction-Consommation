@@ -12,17 +12,7 @@ def Predict(genome, entres):
         #print(f"consommation : {consommation}")
         return consommation
 
-def Modify(genome, change, jump):
-        genome = list(genome)
-        
-        for x in range(jump):
-                i = random.randint(0,9)
-                
-                if bool(random.getrandbits(1)):
-                        genome[i] += change
-                else:
-                        genome[i] -= change
-                return genome
+
 
 def Read_Data():
     with open("data.csv", newline='') as file:
@@ -63,52 +53,53 @@ def Test(genome, data):
         return score
 
 
-
-average_deviation_generations = []
-data = Read_Data()
-print(data)
-model = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-time_since_evolution = 0
-change = 1
-jump = 1
-
-
-
-for i in range (1000):
-
-        if time_since_evolution > 50:
-               time_since_evolution = 0
-               change +=1
-        
-        if change > 1 and score_model > 5000:
-                
-                for x in range(10):
-                       for y in range(10):
-                              for z in range(10):
-                                     for k in range(10):
-                                        new_model[x] += change
-                                        new_model[y] += change
-                                        new_model[z] -= change
-                                        new_model[k] -= change
-        else:
-               
-                new_model = Modify(model, change, jump)
-        #print(new_model)
-        score_model = Test(model, data)
-        score_new_model = Test(new_model, data)
-
+def Select_Best(option1, option2):
+        score_model = Test(option1, data)
+        score_new_model = Test(option2, data)
         
         if score_model > score_new_model:
-                model = new_model
+                print(score_model / 2982 , score_new_model/ 2982, option2)
                 average_deviation_generations.append(score_new_model / 2982)
-                print(f'Generation {i} / Average Deviation: {Test(model, data)/2982} / Model {model} / Change {change} / Jump {jump}')
-                time_since_evolution = 0
-                change = 1
-                jump = 1
+                print(f'Generation  / Average Deviation: {Test(model, data)/2982} / Model {model}')
+                return True
         else:
-               print(f"Generation {i}, pas d'amélioration, {score_model/2982}, Time since evolution: {time_since_evolution} / change {change} / jump {jump}")
-               time_since_evolution += 1
-               
+                print(f"Generation {score_model/2982}, model {option1}")
+                return False
+
+model = numpy.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
+def Scan(change, model, generation):
+        generation += 1
+        print("generation: ", generation)
+        for i in range(10):
+                new_model = model.copy()
+                new_model[i] += change
+                if Select_Best(model, new_model) == True:
+                        print("+", new_model)
+                        model = new_model.copy()
+                        print("+", model)
+                        if generation < 1000:
+                                Scan(change, model, generation)
+                new_model = model.copy()
+                new_model[i] -= change
+                if Select_Best(model, new_model) == True:
+                        print("-", new_model)
+                        model = new_model.copy()
+                        print("-", model)
+                        if generation < 1000:
+                                Scan(change, model, generation)
+        
+                        
+average_deviation_generations = []
+data = Read_Data()
+model = numpy.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
+change = 1
+generation = 0
+
+Scan(change, model, generation)
+for i in range (1000):
+        pass
+        
+        
 
         
         
