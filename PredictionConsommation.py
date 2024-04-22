@@ -1,15 +1,13 @@
-import random
 import csv
 import numpy
 import matplotlib.pyplot as plt
 import time
 
-def Predict(genome, entres):
+def Predict(model, entres):
         consommation = 0
-        #print(genome)
-        #print(entres)
-        consommation = numpy.sum(numpy.multiply(genome, entres[0:10])) * 100
-        #print(f"consommation : {consommation}")
+        
+        consommation = numpy.sum(numpy.multiply(model, entres[0:10])) * 100
+        
         return consommation
 
 def Read_Data():
@@ -34,7 +32,7 @@ def Read_Data():
         # Convert the 2D list to a 2D numpy array
         new_array = numpy.array(new_data)
         for y in range(len(new_array)):
-               for x in range(11):
+               for x in range(10):
                       new_array[y][x] = float(new_array[y][x]) + 10
 
         
@@ -121,8 +119,6 @@ def Scan(depth, lastchange):
         
         if abs(Last_generation - time.time()) < 30:
                 Scan(depth+1, None)
-                print("The code is behind the second scan")
-        
         return
     
 
