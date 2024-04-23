@@ -1,8 +1,11 @@
 import numpy
 import csv
 import math
-#model = numpy.array([85.0, 36.0, 42.0, 0.0, 0.0, 0.0, -40.0, -32.0, -6.0, -11.0])
+#model = numpy.array([893.59107926,  952.79062748,  960.02668559,  961.91353912,  959.19135035, 955.43143291,  910.90470165,  913.66189201,  937.96857275, -225.55975275])
 model = numpy.array([0.0]*10)
+#for i in range(7):
+#    model[i] = 1000
+#model[9] = -1000
 Precision = 1
 
 def Read_Data():
@@ -29,7 +32,8 @@ def Read_Data():
         for y in range(len(new_array)):
             for x in range(len(new_array[y])):
                 new_array[y][x] = float(new_array[y][x]) + 10
-                 
+                if x == 9:
+                    new_array[y][x] = float(new_array[y][x])
         return new_array.astype(float)
     
 
@@ -45,43 +49,52 @@ def Level(model, data):
     return score / len(data)
 
 def Test(model, data, index):
-     
         score = 0.0
-        #for i in range(len(data)):
+        
         
         for i in range(len(data)):    
-            score += data[i][index] * abs(Predict(model, data[i][:-1])- float(data[i][10]))
-            #print(data[i][10] * abs(Predict(model, data[i][:-1])- float(data[i][10])))
-        #print("score moyenne", score/len(data))
-        return score/len(data)
+            score += data[i][index] *   (Predict(model, data[i][:-1])- float(data[i][10]))
+            
+        return -score/len(data)
 
-
-Err = []
+Last = 0.0
+OutputData = {"Level": [], "DerLevel": []}
+ModelThing = []
 def Train(model, data, precision):
-    Error = 0.0
     DirectionalVector = numpy.array([0.0]*10)
-    for i in range(5000):
+    
+    for i in range(int(input("Amount of Generations >>>"))):
+        for i in range (200):
+            for index in range(len(model)):
+                DirectionalVector[index] = precision * Test(model, data, index)
+            Last = Level(model, data)
+            model = numpy.add(model, DirectionalVector)
+
+            print(f"Generation {i}: Level: {Level(model, data)} / Better: {Last - Level(model, data)} / Model : ", model)
+
+            OutputData["Level"].append(Level(model, data))
+            OutputData["DerLevel"].append(-Last + Level(model, data))
+            ModelThing.append(numpy.sum(model))
+            
         
-        for index in range(len(model)):
-            Error = 0.0
-            DirectionalVector = numpy.array([0.0]*10)
-            Error = Test(model, data, index)
-            DirectionalVector[index] = precision * Error
-        #print(DirectionalVector)
-        #print(DirectionalVector)
-        print(f"Generation {i}: Error: {Level(model, data)}")
-        model = numpy.add(model, DirectionalVector)
-        Err.append(Error)
     return model
 
 
 
 
-model = Train(model, Read_Data(), 0.0001)
+model = Train(model, Read_Data(), 0.0005)
 
 import matplotlib.pyplot as plt
 
-plt.plot(Err, "r")
+plt.plot(OutputData["Level"], "r")
+plt.show()
+plt.close()
+
+plt.plot(OutputData["DerLevel"], "r")
+plt.show()
+plt.close()
+
+plt.plot(ModelThing, "r")
 plt.show()
 plt.close()
 

@@ -1,0 +1,65 @@
+import numpy
+import random
+alpha = 155
+beta = 177
+gamma = 58
+data = []
+
+for i in range(1000):
+    x = random.randint(0,1000)
+    y = random.randint(0,1000)
+    data.append([x,y, (alpha * x) + (beta * y) + gamma])
+
+
+def Train(model, data, precision):
+    DirectionalVector = numpy.array([0.0]*3)
+    
+    for i in range(int(input("Amount of Generations >>>"))):
+        for z in range (200):
+            for index in range(len(model)):
+                DirectionalVector[index] = precision * Test(model, data, index, z, i)
+                
+            Last = Level(model, data)
+            model = numpy.add(numpy.array(model), DirectionalVector)
+
+            print(f"Generation {(200*i) + z}: Level: {Level(model, data)} / Better: {Last - Level(model, data)} / Model : ", model)
+    return model
+
+def Test(model, data, index, z, i):
+        score = 0.0
+        
+        if index != 2:
+            for i in range(len(data)):    
+                score += data[i][index] * (Predict(model, data[i][:-1])- float(data[i][2]))
+        else:
+            for i in range(len(data)):    
+                score += (Predict(model, data[i][:-1])- float(data[i][2])) * ((z*200) + i)
+        return -score/len(data)
+
+def Level(model, data):
+    score = 0.0
+    for i in range(len(data)):
+        score += abs(Predict(model, data[i][:-1])- float(data[i][2]))
+    return score / len(data)
+            
+
+def Predict(model, input):
+    return numpy.sum(numpy.multiply(numpy.array(model[:-1]), numpy.array(input))) + model[2]
+
+
+model = Train([0.0,0.0, 0.0], data, 0.0000001)
+
+
+
+stuff = []
+stuff2 = []
+
+for i in range(len(data)):
+    stuff.append(data[i][2])
+    stuff2.append(Predict(model, data[i][:-1]))
+
+
+import matplotlib.pyplot as plt
+plt.plot(stuff, "g", stuff2, "r")
+plt.show()
+plt.close()
